@@ -45,7 +45,7 @@ def onLoad():
 		########## User onLoad CODE ##########
 		if configHandler.checkConfig("fcm"):
 			logging.debug(globalVars.config.get("fcm", "certificatepath"))
-			firebase_cred = credentials.Certificate(globalVars.config.get("fmc", "certificatepath"))
+			firebase_cred = credentials.Certificate(globalVars.config.get("fcm", "certificatepath"))
 			firebase_app = firebase_admin.initialize_app(firebase_cred)
 			pass
 		########## User onLoad CODE ##########

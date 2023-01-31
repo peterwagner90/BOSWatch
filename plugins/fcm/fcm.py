@@ -87,7 +87,7 @@ def run(typ,freq,data):
 			elif typ == "POC":
 				topic = 'alarm'
 				message = messaging.Message(
-  					data={'ric': data["ric"], 'function': data["function"], 'message': data["msg"]},
+  					data={'title': data["ric"], 'function': data["function"], 'body': data["msg"]},
   					android = messaging.AndroidConfig(
     					priority='high'
   					),

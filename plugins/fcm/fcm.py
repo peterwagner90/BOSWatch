@@ -96,7 +96,7 @@ def run(typ,freq,data):
 				# Send a message to the devices subscribed to the provided topic.
 				response = messaging.send(message)
 				# Response is a message ID string.
-				print('Successfully sent message:', response)
+				logging.info("FCM Message sent %s", response)
 			else:
 				logging.warning("Invalid Typ: %s", typ)
 			########## User Plugin CODE ##########

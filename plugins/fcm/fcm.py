@@ -46,8 +46,8 @@ def onLoad():
 		if configHandler.checkConfig("fcm"):
 			logging.debug(globalVars.config.get("fcm", "cerificatePath"))
 			firebase_cred = credentials.Certificate(globalVars.config.get("fmc", "cerificatePath"))
-        	firebase_app = firebase_admin.initialize_app(firebase_cred)
-        	pass
+			firebase_app = firebase_admin.initialize_app(firebase_cred)
+			pass
 		########## User onLoad CODE ##########
 	except:
 		logging.error("unknown error")

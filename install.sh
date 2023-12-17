@@ -108,7 +108,7 @@ tput cup 13 15
 echo "[ 2/9] [##-------]"
 tput cup 15 5
 echo "-> download GIT and other stuff.........."
-apt-get -y install git cmake build-essential libusb-1.0-1 qt5-qmake libpulse-dev libx11-dev sox python3-pip >> $boswatch_install_path/setup_log.txt 2>&1
+apt-get -y install git cmake build-essential libusb-1.0-0-dev qt5-qmake libpulse-dev libx11-dev sox python3-pip >> $boswatch_install_path/setup_log.txt 2>&1
 exitcodefunction $? download stuff
 
 # download BOSWatch via git
@@ -150,7 +150,7 @@ exitcodefunction $? make rtl-sdr
 make install >> $boswatch_install_path/setup_log.txt 2>&1
 exitcodefunction $? make-install rtl-sdr
 
-ldconfig >> $boswatch_install_path/setup_log.txt 2>&1
+/sbin/ldconfig >> $boswatch_install_path/setup_log.txt 2>&1
 exitcodefunction $? ldconfig rtl-sdr
 
 

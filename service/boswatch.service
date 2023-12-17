@@ -4,7 +4,7 @@ After=multi-user.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python /opt/boswatch/boswatch.py -f 162.475M -a POC1200 -e 52.694 -v -u
+ExecStart=python3 /opt/boswatch/boswatch.py -f 162.475M -a POC1200 -e 52.694 -v -u
 Restart=on-abort
 
 [Install]

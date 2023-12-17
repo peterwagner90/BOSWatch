@@ -172,7 +172,7 @@ tput cup 15 5
 echo "-> compile multimon-ng................."
 mkdir -p build
 cd build
-qmake ../multimon-ng.pro >> $boswatch_install_path/setup_log.txt 2>&1
+qmake -qt=qt5 ../multimon-ng.pro >> $boswatch_install_path/setup_log.txt 2>&1
 exitcodefunction $? qmake multimonNG
 
 make >> $boswatch_install_path/setup_log.txt 2>&1

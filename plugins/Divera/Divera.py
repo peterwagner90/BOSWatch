@@ -196,14 +196,23 @@ def run(typ, freq, data):
             elif typ == "POC":
             # start connection POC
                 conn = http.client.HTTPSConnection("www.divera247.com:443")
-                conn.request("GET", "/api/alarm",
-                            urllib.parse.urlencode({
-                                "accesskey": globalVars.config.get("Divera", "accesskey"),
-                                "title": title,
-                                "ric": ric,
-                                "text": text,
-                                "priority": priority,
-                            }))
+                if (ric == ''):
+                    conn.request("GET", "/api/alarm",
+                                urllib.parse.urlencode({
+                                    "accesskey": globalVars.config.get("Divera", "accesskey"),
+                                    "title": title,
+                                    "text": text,
+                                    "priority": priority,
+                                }))
+                else:
+                    conn.request("GET", "/api/alarm",
+                                urllib.parse.urlencode({
+                                    "accesskey": globalVars.config.get("Divera", "accesskey"),
+                                    "title": title,
+                                    "ric": ric,
+                                    "text": text,
+                                    "priority": priority,
+                                }))
                                       
             
             else:

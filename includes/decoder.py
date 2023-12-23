@@ -24,6 +24,7 @@ def decode(freq, decoded):
 	@exception: Exception if decoder file call failed
 	"""
 	try:
+		
 		# FMS Decoder Section
 		# check FMS: -> check CRC -> validate -> check double alarm -> log
 		if "FMS:" in decoded:

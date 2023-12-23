@@ -20,12 +20,15 @@ from includes import doubleFilter  # double alarm filter
 #
 # Simple local filter
 #
-def isAllowed(poc_id):
+def isAllowed(poc_id, onlyAllowed):
 	"""
 	Simple Filter Functions (Allowed, Denied and Range)
 
 	@type    poc_id: string
 	@param   poc_id: POCSAG Ric
+
+	@type    onlyAllowed: bool
+	@param   onlyAllowed: Only allowed RICs are allowed
 
 	@requires:  Configuration has to be set in the config.ini
 
@@ -43,8 +46,11 @@ def isAllowed(poc_id):
 			logging.info("RIC %s is allowed", poc_id)
 			return True
 		else:
-			logging.info("RIC %s is not in the allowed list", poc_id)
-			allowed = 0
+			if onlyAllowed:
+				logging.info("RIC %s is not in the allowed list - no alarm", poc_id)
+				return False
+			else:
+				allowed = 0
 	# 2.) If denied RIC, return False
 	if poc_id in globalVars.config.get("POC", "deny_ric"):
 		logging.info("RIC %s is denied by config.ini", poc_id)
@@ -126,7 +132,7 @@ def decode(freq, decoded):
 			logging.debug("POCSAG Bitrate: %s", bitrate)
 
 			if "Alpha:" in decoded: #check if there is a text message
-				poc_text = str(bytes(decoded.split('Alpha:   ')[1].strip().replace('<NUL><NUL>','').replace('<NUL>','').replace('<NUL','').replace('< NUL>','').replace('<EOT>','').strip(), 'ISO-8859-1'), 'utf-8')
+				poc_text = decoded.split('Alpha:   ')[1].strip().replace('<NUL><NUL>','').replace('<NUL>','').replace('<NUL','').replace('< NUL>','').replace('<EOT>','').strip()
 				if globalVars.config.getint("POC","geo_enable"):
 					try:
 						logging.debug("Using %s to find geo-tag in %s", globalVars.config.get("POC","geo_format"),poc_text)
@@ -154,7 +160,7 @@ def decode(freq, decoded):
 				poc_text = ""
 
 			if re.search("[0-9]{7}", poc_id) and re.search("[1-4]{1}", poc_sub): #if POC is valid
-				if isAllowed(poc_id):
+				if isAllowed(poc_id,False):
 
 					# check for double alarm
 					if doubleFilter.checkID("POC", poc_id+poc_sub, poc_text):
@@ -172,27 +178,27 @@ def decode(freq, decoded):
 						if globalVars.config.getint("POC", "idDescribed"):
 							from includes import descriptionList
 							data["description"] = descriptionList.getDescription("POC", data["ric"]+data["functionChar"])
+						if isAllowed(poc_id,True):	
+							# multicastAlarm processing if enabled and a message without text or delimiter RIC or netIdent_ric received
+							if globalVars.config.getint("multicastAlarm", "multicastAlarm") and data["ric"] != globalVars.config.get("POC", "netIdent_ric") and (data["msg"] == "" or data["ric"] in globalVars.config.get("multicastAlarm", "multicastAlarm_delimiter_ric")):
+								logging.debug(" - multicastAlarm without msg")
+								from includes import multicastAlarm
+								multicastAlarm.newEntrymultiList(data)
 
-						# multicastAlarm processing if enabled and a message without text or delimiter RIC or netIdent_ric received
-						if globalVars.config.getint("multicastAlarm", "multicastAlarm") and data["ric"] != globalVars.config.get("POC", "netIdent_ric") and (data["msg"] == "" or data["ric"] in globalVars.config.get("multicastAlarm", "multicastAlarm_delimiter_ric")):
-							logging.debug(" - multicastAlarm without msg")
-							from includes import multicastAlarm
-							multicastAlarm.newEntrymultiList(data)
+							# multicastAlarm processing if enabled and alarm message has been received
+							elif globalVars.config.getint("multicastAlarm", "multicastAlarm") and data["msg"] != "" and data["ric"] in globalVars.config.get("multicastAlarm", "multicastAlarm_ric"):
+								logging.debug(" - multicastAlarm with message")
+								from includes import multicastAlarm
+								multicastAlarm.multicastAlarmExec(freq, data)
 
-						# multicastAlarm processing if enabled and alarm message has been received
-						elif globalVars.config.getint("multicastAlarm", "multicastAlarm") and data["msg"] != "" and data["ric"] in globalVars.config.get("multicastAlarm", "multicastAlarm_ric"):
-							logging.debug(" - multicastAlarm with message")
-							from includes import multicastAlarm
-							multicastAlarm.multicastAlarmExec(freq, data)
-
-						else:
-							# processing the alarm
-							try:
-								from includes import alarmHandler
-								alarmHandler.processAlarmHandler("POC", freq, data)
-							except:
-								logging.error("processing alarm failed")
-								logging.debug("processing alarm failed", exc_info=True)
+							else:
+								# processing the alarm
+								try:
+									from includes import alarmHandler
+									alarmHandler.processAlarmHandler("POC", freq, data)
+								except:
+									logging.error("processing alarm failed")
+									logging.debug("processing alarm failed", exc_info=True)
 					# in every time save old data for double alarm
 					doubleFilter.newEntry(poc_id+poc_sub, poc_text)
 				else:

@@ -152,6 +152,10 @@ def decode(freq, decoded):
 					has_geo = False
 			else:
 				poc_text = ""
+				
+			# convert to utf-8
+			poc_text = str(bytes(poc_text, 'ISO-8859-1'), 'utf-8')
+
 			if re.search("[0-9]{7}", poc_id) and re.search("[1-4]{1}", poc_sub): #if POC is valid
 				if isAllowed(poc_id):
 

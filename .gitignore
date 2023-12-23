@@ -4,6 +4,7 @@
 *.bak
 config.ini
 log/
+logs/
 
 \.project
 

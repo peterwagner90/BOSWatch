@@ -133,6 +133,7 @@ def decode(freq, decoded):
 
 			if "Alpha:" in decoded: #check if there is a text message
 				poc_text = decoded.split('Alpha:   ')[1].strip().replace('<NUL><NUL>','').replace('<NUL>','').replace('<NUL','').replace('< NUL>','').replace('<EOT>','').strip()
+				poc_text = poc_text.encode('utf-8').decode('unicode-escape').encode('latin1').decode('utf8')
 				if globalVars.config.getint("POC","geo_enable"):
 					try:
 						logging.debug("Using %s to find geo-tag in %s", globalVars.config.get("POC","geo_format"),poc_text)

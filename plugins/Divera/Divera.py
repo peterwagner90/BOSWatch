@@ -9,6 +9,7 @@ Divera-Plugin to send FMS-, ZVEI- and POCSAG - messages to Divera
 
 import logging  # Global logger
 import http.client  # for the HTTP request
+import re
 import urllib.request, urllib.parse, urllib.error
 from includes import globalVars  # Global variables
 
@@ -131,6 +132,8 @@ def run(typ, freq, data):
             text = wildcardHandler.replaceWildcards(text, data)
             logging.debug("Text    : %s", text)
             
+            # Remove AxxSRS and (11:11) from title
+            title = re.sub(r'^\s*A\d+SRS\s*\(\d{2}:\d{2}\)\s*', '', title)
             if typ == "FMS":
                 vehicle = wildcardHandler.replaceWildcards(vehicle, data)
                 logging.debug("Vehicle     : %s", vehicle)

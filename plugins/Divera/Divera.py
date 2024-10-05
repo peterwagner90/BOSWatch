@@ -7,6 +7,7 @@ Divera-Plugin to send FMS-, ZVEI- and POCSAG - messages to Divera
 @requires: Divera-Configuration has to be set in the config.ini
 """
 
+import json
 import logging  # Global logger
 import http.client  # for the HTTP request
 import re
@@ -219,7 +220,7 @@ def run(typ, freq, data):
                                       
             
             else:
-                loggin.debug("No Type is set", exc_info=True)
+                logging.debug("No Type is set", exc_info=True)
                 return
 
         except:
@@ -236,6 +237,60 @@ def run(typ, freq, data):
                 logging.debug("Divera response: %s - %s", str(response.status), str(response.reason))
             else:
                 logging.warning("Divera response: %s - %s", str(response.status), str(response.reason))
+            
+            if str(response.status) == "200":        
+                # Make a GET request to /api/last-alarm using the accesskey
+                conn.request("GET", "/api/last-alarm",
+                        urllib.parse.urlencode({
+                        "accesskey": globalVars.config.get("Divera", "accesskey")
+                        }))
+                
+                # Check the response status
+                response = conn.getresponse()
+                if str(response.status) == "200":
+                    # Response is 200, do something with the response data
+                    data = response.read()
+                    json_data = data.decode('utf-8')
+                    message_channel_id = json.loads(json_data)['message_channel_id']
+                    # Process the response data here
+                    # Construct the JSON payload
+                    payload = {
+                        "Message": {
+                            "message_channel_id": message_channel_id,
+                            "parent_id": 0,
+                            "text": text,
+                            "uploads": "Binary"
+                        }
+                    }
+
+                    # Convert the payload to JSON string
+                    payload_json = json.dumps(payload)
+
+                    # Make a POST request to the REST API
+                    conn.request("POST", "/api/v2/messages",
+                                urllib.parse.urlencode({
+                                "accesskey": globalVars.config.get("Divera", "messageaccesskey")
+                                }),
+                                body=payload_json,
+                                headers={"Content-Type": "application/json"})
+
+                    # Check the response status
+                    response = conn.getresponse()
+                    if str(response.status) == "200":
+                        # Response is 200, do something with the response data
+                        data = response.read()
+                        json_data = data.decode('utf-8')
+                        # Process the response data here
+                        # ...
+                    else:
+                        # Response is not 200, handle the error
+                        logging.warning("Divera  response: %s - %s", str(response.status), str(response.reason))
+                else:
+                    # Response is not 200, handle the error
+                    logging.warning("Divera  response: %s - %s", str(response.status), str(response.reason))
+            else:
+                # Response is not 200, handle the error
+                logging.warning("Divera response: %s - %s", str(response.status), str(response.reason))
         except:  # otherwise
             logging.error("cannot get Divera response")
             logging.debug("cannot get Divera response", exc_info=True)
@@ -244,10 +299,10 @@ def run(typ, freq, data):
         finally:
             logging.debug("close Divera-Connection")
             try:
-                request.close()
+                conn.close()
             except:
                 pass
-
+        
     except:
         logging.error("unknown error")
         logging.debug("unknown error", exc_info=True)

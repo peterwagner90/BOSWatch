@@ -1,0 +1,11 @@
+[Unit]
+Description=BOSWatch
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=python3 /opt/boswatch/boswatch.py -f 162.475M -a POC1200 -e 0.15 -g 300 -v -u
+Restart=on-abort
+StandardOutput=null
+[Install]
+WantedBy=multi-user.target

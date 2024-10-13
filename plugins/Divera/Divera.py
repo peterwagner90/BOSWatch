@@ -170,10 +170,10 @@ def run(typ, freq, data):
             else:
                 logging.info("No ZVEI, FMS or POC alarm")
             
-            # start connection to Divera                
+            # start connection to Divera
+            conn = http.client.HTTPSConnection("www.divera247.com:443")                
             if typ == "FMS":
                 # start the connection FMS
-                conn = http.client.HTTPSConnection("www.divera247.com:443")
                 conn.request("GET", "/api/fms",
                              urllib.parse.urlencode({
                                 "accesskey": globalVars.config.get("Divera", "accesskey"),
@@ -187,7 +187,6 @@ def run(typ, freq, data):
                             
             elif typ == "ZVEI":
             # start connection ZVEI; zvei_id in Divera is alarm-RIC!
-                conn = http.client.HTTPSConnection("www.divera247.com:443")
                 conn.request("GET", "/api/alarm",
                             urllib.parse.urlencode({
                                 "accesskey": globalVars.config.get("Divera", "accesskey"),
@@ -198,8 +197,7 @@ def run(typ, freq, data):
                             }))
             
             elif typ == "POC":
-            # start connection POC
-                conn = http.client.HTTPSConnection("www.divera247.com:443")
+            # start connection POC  
                 if (ric == ''):
                     conn.request("GET", "/api/alarm",
                                 urllib.parse.urlencode({

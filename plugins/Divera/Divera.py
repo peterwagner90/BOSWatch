@@ -266,7 +266,7 @@ def run(typ, freq, data):
                     payload_json = json.dumps(payload)
 
                     # Make a POST request to the REST API
-                    conn3.request("POST", "/api/v2/messages",
+                    conn.request("POST", "/api/v2/messages",
                                 urllib.parse.urlencode({
                                 "accesskey": globalVars.config.get("Divera", "messageaccesskey")
                                 }),
@@ -274,7 +274,7 @@ def run(typ, freq, data):
                                 headers={"Content-Type": "application/json"})
 
                     # Check the response status
-                    response = conn3.getresponse()
+                    response = conn.getresponse()
                     if str(response.status) == "200":
                         # Response is 200, do something with the response data
                         data = response.read()

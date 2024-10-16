@@ -235,7 +235,8 @@ def run(typ, freq, data):
                 logging.debug("Divera response: %s - %s", str(response.status), str(response.reason))
             else:
                 logging.warning("Divera response: %s - %s", str(response.status), str(response.reason))
-            
+            response = conn.read() # read the response to clear the buffer
+
             if str(response.status) == "200":        
                 # Make a GET request to /api/last-alarm using the accesskey
                 conn.request("GET", "/api/last-alarm",
@@ -277,9 +278,6 @@ def run(typ, freq, data):
                     if str(response.status) == "200":
                         # Response is 200, do something with the response data
                         data = response.read()
-                        json_data = data.decode('utf-8')
-                        # Process the response data here
-                        # ...
                     else:
                         # Response is not 200, handle the error
                         logging.warning("Divera  response: %s - %s", str(response.status), str(response.reason))

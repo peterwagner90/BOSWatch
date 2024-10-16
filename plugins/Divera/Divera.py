@@ -171,9 +171,7 @@ def run(typ, freq, data):
                 logging.info("No ZVEI, FMS or POC alarm")
             
             # start connection to Divera
-            conn = http.client.HTTPSConnection("www.divera247.com:443")
-            conn2 = http.client.HTTPSConnection("www.divera247.com:443")
-            conn3 = http.client.HTTPSConnection("www.divera247.com:443")                
+            conn = http.client.HTTPSConnection("www.divera247.com:443")              
             if typ == "FMS":
                 # start the connection FMS
                 conn.request("GET", "/api/fms",
@@ -241,18 +239,18 @@ def run(typ, freq, data):
 
             if str(response.status) == "200":        
                 # Make a GET request to /api/last-alarm using the accesskey
-                conn2.request("GET", "/api/last-alarm",
+                conn.request("GET", "/api/last-alarm",
                         urllib.parse.urlencode({
                         "accesskey": globalVars.config.get("Divera", "accesskey")
                         }))
                 
                 # Check the response status
-                response = conn2.getresponse()
+                response = conn.getresponse()
                 if str(response.status) == "200":
                     # Response is 200, do something with the response data
                     data = response.read()
                     json_data = data.decode('utf-8')
-                    message_channel_id = json.loads(json_data)['message_channel_id']
+                    message_channel_id = json.loads(json_data)['data']['message_channel_id']
                     # Process the response data here
                     # Construct the JSON payload
                     payload = {
@@ -298,8 +296,6 @@ def run(typ, freq, data):
             logging.debug("close Divera-Connection")
             try:
                 conn.close()
-                conn2.close()
-                conn3.close()
             except:
                 pass
         

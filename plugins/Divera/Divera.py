@@ -171,7 +171,9 @@ def run(typ, freq, data):
                 logging.info("No ZVEI, FMS or POC alarm")
             
             # start connection to Divera
-            conn = http.client.HTTPSConnection("www.divera247.com:443")                
+            conn = http.client.HTTPSConnection("www.divera247.com:443")
+            conn2 = http.client.HTTPSConnection("www.divera247.com:443")
+            conn3 = http.client.HTTPSConnection("www.divera247.com:443")                
             if typ == "FMS":
                 # start the connection FMS
                 conn.request("GET", "/api/fms",
@@ -239,13 +241,13 @@ def run(typ, freq, data):
 
             if str(response.status) == "200":        
                 # Make a GET request to /api/last-alarm using the accesskey
-                conn.request("GET", "/api/last-alarm",
+                conn2.request("GET", "/api/last-alarm",
                         urllib.parse.urlencode({
                         "accesskey": globalVars.config.get("Divera", "accesskey")
                         }))
                 
                 # Check the response status
-                response = conn.getresponse()
+                response = conn2.getresponse()
                 if str(response.status) == "200":
                     # Response is 200, do something with the response data
                     data = response.read()
@@ -266,7 +268,7 @@ def run(typ, freq, data):
                     payload_json = json.dumps(payload)
 
                     # Make a POST request to the REST API
-                    conn.request("POST", "/api/v2/messages",
+                    conn3.request("POST", "/api/v2/messages",
                                 urllib.parse.urlencode({
                                 "accesskey": globalVars.config.get("Divera", "messageaccesskey")
                                 }),
@@ -274,7 +276,7 @@ def run(typ, freq, data):
                                 headers={"Content-Type": "application/json"})
 
                     # Check the response status
-                    response = conn.getresponse()
+                    response = conn3.getresponse()
                     if str(response.status) == "200":
                         # Response is 200, do something with the response data
                         data = response.read()
@@ -296,6 +298,8 @@ def run(typ, freq, data):
             logging.debug("close Divera-Connection")
             try:
                 conn.close()
+                conn2.close()
+                conn3.close()
             except:
                 pass
         

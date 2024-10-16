@@ -235,7 +235,7 @@ def run(typ, freq, data):
                 logging.debug("Divera response: %s - %s", str(response.status), str(response.reason))
             else:
                 logging.warning("Divera response: %s - %s", str(response.status), str(response.reason))
-            response = conn.read() # read the response to clear the buffer
+            response.read() # read the response to clear the buffer
 
             if str(response.status) == "200":        
                 # Make a GET request to /api/last-alarm using the accesskey

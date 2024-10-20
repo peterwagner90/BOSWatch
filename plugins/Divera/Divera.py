@@ -11,6 +11,7 @@ import json
 import logging  # Global logger
 import http.client  # for the HTTP request
 import re
+import time
 import urllib.request, urllib.parse, urllib.error
 from includes import globalVars  # Global variables
 
@@ -238,6 +239,8 @@ def run(typ, freq, data):
             response.read() # read the response to clear the buffer
 
             if str(response.status) == "200":        
+                # Wait for 100ms to avoid concurrency issues 
+                time.sleep(0.1)
                 # Make a GET request to /api/last-alarm using the accesskey
                 conn.request("GET", "/api/last-alarm",
                         urllib.parse.urlencode({

@@ -239,8 +239,8 @@ def run(typ, freq, data):
             response.read() # read the response to clear the buffer
 
             if str(response.status) == "200":        
-                # Wait for 100ms to avoid concurrency issues 
-                time.sleep(0.1)
+                # Wait to avoid concurrency issues 
+                time.sleep(0.2)
                 # Make a GET request to /api/last-alarm using the accesskey
                 conn.request("GET", "/api/last-alarm",
                         urllib.parse.urlencode({

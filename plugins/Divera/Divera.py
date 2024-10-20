@@ -254,6 +254,7 @@ def run(typ, freq, data):
                     # Process the response data here
                     # Construct the JSON payload
                     payload = {
+                        "accesskey": globalVars.config.get("Divera", "messageaccesskey"),
                         "Message": {
                             "message_channel_id": message_channel_id,
                             "parent_id": 0,
@@ -267,9 +268,6 @@ def run(typ, freq, data):
 
                     # Make a POST request to the REST API
                     conn.request("POST", "/api/v2/messages",
-                                urllib.parse.urlencode({
-                                "accesskey": globalVars.config.get("Divera", "messageaccesskey")
-                                }),
                                 body=payload_json,
                                 headers={"Content-Type": "application/json"})
 

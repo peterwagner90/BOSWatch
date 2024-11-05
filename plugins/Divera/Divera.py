@@ -135,7 +135,7 @@ def run(typ, freq, data):
             logging.debug("Text    : %s", text)
             
             # Remove AxxSRS and (11:11) from title
-            title = re.sub(r'^\s*A\d+SRS\s*\(\d{2}:\d{2}\)\s*', '', title)
+            title = re.sub(r'^\s*A\d+(SR|SRS)\s*\(\d{2}:\d{2}\)\s*', '', title)
             if typ == "FMS":
                 vehicle = wildcardHandler.replaceWildcards(vehicle, data)
                 logging.debug("Vehicle     : %s", vehicle)
